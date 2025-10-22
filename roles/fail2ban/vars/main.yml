@@ -1,0 +1,32 @@
+---
+fail2ban_service: fail2ban
+
+jail_conf:
+  - "/etc/fail2ban/jail.conf"
+
+jail_local:
+  - "/etc/fail2ban/jail.local"
+
+fail2ban_destemail: "{{ system_email_recipient }}"
+fail2ban_sender: "{{ system_email_recipient }}"
+
+fail2ban_base_configuration:
+  - option: loglevel
+    value: "{{ fail2ban_loglevel }}"
+    section: Definition
+  - option: logtarget
+    value: "{{ fail2ban_logtarget }}"
+    section: Definition
+  - option: ignoreip
+    value: "{{ fail2ban_ignoreips | join(' ') }}"
+    section: DEFAULT
+
+fail2ban_jails:
+  - name: ssh
+    enabled: true
+    port: ssh
+    filter: sshd
+    logpath: /var/log/authlog.log
+    findtime: 3200
+    bantime: 86400
+    maxretry: 2

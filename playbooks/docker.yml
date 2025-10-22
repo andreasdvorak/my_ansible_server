@@ -1,0 +1,8 @@
+- name: Task iptables
+  hosts: mailserver
+  become: true
+  tags: docker
+  tasks:
+    - name: Include docker role
+      ansible.builtin.include_role:
+        name: docker

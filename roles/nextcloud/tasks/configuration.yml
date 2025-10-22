@@ -1,0 +1,43 @@
+---
+- name: Set default_phone_region
+  ansible.builtin.lineinfile:
+    dest: "{{ nextcloud_path }}/config/config.php"
+    regexp: 'default_phone_region'
+    line: "  'default_phone_region' => '{{ default_phone_region }}',"
+    state: present
+    backup: true
+
+- name: Set default_timezone
+  ansible.builtin.lineinfile:
+    dest: "{{ nextcloud_path }}/config/config.php"
+    regexp: 'default_timezone'
+    line: "  'default_timezone' => '{{ default_timezone }}',"
+    state: present
+    backup: true
+#  notify:
+#    - Restart Apache
+
+- name: Set maintenance_window_start
+  ansible.builtin.lineinfile:
+    dest: "{{ nextcloud_path }}/config/config.php"
+    regexp: 'maintenance_window_start'
+    line: "  'maintenance_window_start' => {{ maintenance_window_start }},"
+    state: present
+    backup: true
+
+- name: Set overwrite.cli.url
+  ansible.builtin.lineinfile:
+    dest: "{{ nextcloud_path }}/config/config.php"
+    regexp: 'overwrite.cli.url'
+    line: "  'overwrite.cli.url' => '{{ overwrite_cli_url }}',"
+    state: present
+    backup: true
+
+- name: Set trashbin_retention_obligation
+  ansible.builtin.lineinfile:
+    dest: "{{ nextcloud_path }}/config/config.php"
+    regexp: 'trashbin_retention_obligation'
+    line: "  'trashbin_retention_obligation' \
+          => '{{ trashbin_retention_obligation }}',"
+    state: present
+    backup: true

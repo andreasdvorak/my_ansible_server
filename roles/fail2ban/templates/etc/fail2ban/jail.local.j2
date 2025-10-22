@@ -1,0 +1,23 @@
+
+# {{ ansible_managed }}
+
+[DEFAULT]
+mta = mail 
+destemail = {{ fail2ban_destemail }}
+sender = {{ fail2ban_sender }}
+action = %(action_)s
+
+{% for service in fail2ban_jails  %}
+[{{ service.name }}]
+enabled = {{ service.enabled | default(true) | bool | to_json }}
+{% for option, value in service.items() %}
+{% if option not in ['name', 'enabled'] %}
+{% if value is iterable and (value is not string and value is not mapping) %}
+{{ option }} = {{ value | join(' ') }}
+{% elif value is string or value is number %}
+{{ option }} = {{ value }}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% endfor %}

@@ -1,0 +1,8 @@
+- name: Task iptables
+  hosts: all
+  become: true
+  tags: iptables
+  tasks:
+    - name: Include iptables role
+      ansible.builtin.include_role:
+        name: iptables

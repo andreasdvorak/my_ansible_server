@@ -1,0 +1,45 @@
+---
+- name: Combine agent plugins from group and host vars
+  ansible.builtin.set_fact:
+    combined_agent_plugins: "{{ checkmk_var_agent_plugins_default + (checkmk_var_agent_plugins | default([])) }}"
+
+
+- name: Ensure plugin sub directories exist
+  become: true
+  ansible.builtin.file:
+    path: "/usr/lib/check_mk_agent/plugins/{{ item.dir | default('') }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ combined_agent_plugins | default(checkmk_var_agent_plugins) }}"
+  when: item.dir is defined
+
+- name: Download agent plugins from checkmk
+  become: true
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/Checkmk/checkmk/refs/heads/release/{{ checkmk_agent_version }}/agents/plugins/{{ item.name }}
+    dest: "/usr/lib/check_mk_agent/plugins/{{ item.dir | default('') }}/{{ item.name }}"
+    mode: u+rwx,g+rx,o+rx
+    force: true
+  loop: "{{ combined_agent_plugins | default(checkmk_var_agent_plugins) }}"
+  when:
+    - item.source is undefined
+
+- name: Download agent plugins from source
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ item.source }}"
+    dest: "/usr/lib/check_mk_agent/plugins/{{ item.dir | default('') }}/{{ item.name }}"
+    mode: u+rwx,g+rx,o+rx
+    force: true
+  loop: "{{ combined_agent_plugins | default(checkmk_var_agent_plugins) }}"
+  when:
+    - item.source is defined
+
+- name: Ensure plugin sub directories exist
+  become: true
+  ansible.builtin.file:
+    path: "/usr/lib/check_mk_agent/plugins/{{ item.dir | default('') }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ combined_agent_plugins | default(checkmk_var_agent_plugins) }}"
+  when: item.dir is defined

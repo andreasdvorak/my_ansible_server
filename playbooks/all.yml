@@ -1,0 +1,104 @@
+- name: "Playbook certbot"
+  ansible.builtin.import_playbook: certbot.yml
+
+- name: "Playbook checkmk site"
+  ansible.builtin.import_playbook: checkmksite.yml
+
+- name: "Playbook common"
+  ansible.builtin.import_playbook: common.yml
+
+- name: "Playbook iptables"
+  ansible.builtin.import_playbook: iptables.yml
+
+- name: "Playbook ssh"
+  ansible.builtin.import_playbook: ssh.yml
+
+- name: Configure postfix
+  hosts: webserver
+  become: true
+  tags: postfix
+  tasks:
+    - name: Include postfix role
+      include_role:
+        name: postfix
+
+- name: Install docker
+  hosts: mailserver
+  become: true
+  tags: docker
+  tasks:
+    - name: Include docker role
+      include_role:
+        name: docker
+
+- name: Configure mail_server
+  hosts: mailserver
+  become: true
+  tags: mail_server
+  tasks:
+    - name: Include mail_server role
+      include_role:
+        name: mail_server
+
+- name: Configure mailcow
+  hosts: mailserver
+  become: true
+  tags: mailcow
+  tasks:
+    - name: Include mailcow role
+      include_role:
+        name: mailcow
+
+- name: Set backup
+  hosts: all
+  become: true
+  tags: backup
+  tasks:
+    - name: Include backup role
+      include_role:
+        name: backup
+
+- name: Install Apache webserver
+  hosts: webserver
+  become: true
+  tags: apache
+  tasks:
+    - name: Include apache role
+      include_role:
+        name: apache
+
+- name: Install fail2ban
+  hosts: webserver
+  become: true
+  tags: fail2ban
+  tasks:
+    - name: Include fail2ban role
+      include_role:
+        name: fail2ban
+
+- name: Install PHP
+  hosts: webserver
+  become: true
+  tags: php
+  tasks:
+    - name: Include php role
+      include_role:
+        name: php
+
+- name: Install MariaDB
+  hosts: webserver
+  become: true
+  tags: mariadb
+  tasks:
+    - name: Include mariadb role
+      include_role:
+        name: mariadb
+
+- name: Configure nextcloud
+  hosts: webserver
+  become: true
+  tags: nextcloud
+  tasks:
+    - name: Include nextcloud role
+      include_role:
+        name: nextcloud

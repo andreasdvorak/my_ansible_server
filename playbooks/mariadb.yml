@@ -1,0 +1,8 @@
+- name: Task mariadb
+  hosts: webserver
+  become: true
+  tags: mariadb
+  tasks:
+    - name: Include mariadb role
+      ansible.builtin.include_role:
+        name: mariadb

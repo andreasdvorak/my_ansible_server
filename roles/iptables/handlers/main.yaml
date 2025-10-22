@@ -1,0 +1,7 @@
+---
+- name: Save current state of the firewall for ipv4
+  community.general.iptables_state:
+    ip_version: ipv4
+    table: filter
+    state: saved
+    path: /etc/iptables/rules.v4

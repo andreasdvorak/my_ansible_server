@@ -1,0 +1,12 @@
+---
+- name: Add main.cf parameter
+  ansible.builtin.lineinfile:
+    dest: /etc/postfix/main.cf
+    regexp: "{{ item.name }}"
+    line: "{{ item.name }} = {{ item.value }}"
+    state: present
+    backup: true
+  with_items:
+    - "{{ main_cf }}"
+  notify:
+    - Restart postfix

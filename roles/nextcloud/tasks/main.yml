@@ -1,0 +1,23 @@
+---
+- name: Task nextcloud configuration
+  ansible.builtin.import_tasks:
+    file: configuration.yml
+
+- name: Task nextcloud backup
+  ansible.builtin.import_tasks:
+    file: backup.yml
+
+- name: Create nextcloud cron
+  ansible.builtin.cron:
+    name: "nextcloud cron"
+    minute: "*/5"
+    user: www-data
+    job: "mk-job nextcloud_cron php -f /var/www/nextcloud/cron.php >/dev/null 2>&1"
+
+- name: Create the check job directory for www-data
+  ansible.builtin.file:
+    path: /var/lib/check_mk_agent/job/www-data
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: u+rwx,g+rx,o+rx

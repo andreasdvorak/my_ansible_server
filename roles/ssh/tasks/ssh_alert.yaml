@@ -1,0 +1,24 @@
+---
+- name: Install finger packages
+  ansible.builtin.package:
+    name: finger
+    state: present
+
+- name: Install mail packages
+  ansible.builtin.package:
+    name: mailutils
+    state: present
+
+- name: Copy ssh alert script
+  ansible.builtin.copy:
+    src: ssh-login-mail.sh
+    dest: /opt/ssh-login-mail.sh
+    mode: u+rwx,g+rx,o+rx
+  diff: true
+
+- name: Edit profile
+  ansible.builtin.lineinfile:
+    path: /etc/profile
+    regexp: '^/opt/ssh-login-mail.sh '
+    line: "/opt/ssh-login-mail.sh \
+           | mail -s \"SSH Login auf $(hostname)\" {{ email }}"

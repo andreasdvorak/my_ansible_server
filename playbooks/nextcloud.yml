@@ -1,0 +1,8 @@
+- name: Konfiguration of nextcloud
+  hosts: webserver
+  become: true
+  tags: nextcloud
+  tasks:
+    - name: Include nextcloud role
+      ansible.builtin.include_role:
+        name: nextcloud

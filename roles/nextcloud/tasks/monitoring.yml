@@ -1,0 +1,8 @@
+---
+- name: Copy nextcloud monitoring script
+  ansible.builtin.copy:
+    src: nextcloud_status.sh
+    dest: /usr/lib/check_mk_agent/local/nextcloud_status.sh
+    owner: root
+    group: root
+    mode: u+rwx,g+rx

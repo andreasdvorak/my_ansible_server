@@ -1,0 +1,8 @@
+- name: Task certbot
+  hosts: webserver
+  become: true
+  tags: certbot
+  tasks:
+    - name: Include certbot role
+      ansible.builtin.include_role:
+        name: certbot

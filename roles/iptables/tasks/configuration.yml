@@ -1,0 +1,79 @@
+---
+- name: Iptables configuration
+  block:
+    - name: Allow packages to loopback interface
+      ansible.builtin.iptables:
+        in_interface: lo
+        chain: INPUT
+        jump: ACCEPT
+        comment: loopback
+
+    - name: Allow incoming ICMP ping
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: icmp
+        icmp_type: any
+        jump: ACCEPT
+
+    - name: Allow outgoing ICMP ping
+      ansible.builtin.iptables:
+        chain: OUTPUT
+        protocol: icmp
+        jump: ACCEPT
+
+    - name: Allow related and established connections
+      ansible.builtin.iptables:
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+
+    - name: Allow http connection port 80
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: '80'
+        jump: ACCEPT
+        comment: http
+
+    - name: Allow https connection port 443
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: '443'
+        jump: ACCEPT
+        comment: https
+
+    - name: "Allow new incoming SYN packets on TCP port (SSH)"
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "{{ ssh_port }}"
+        ctstate: NEW
+        syn: match
+        jump: ACCEPT
+        comment: Accept new SSH connections
+
+    - name: Add host specific rules
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        jump: ACCEPT
+        destination_port: "{{ item.destination_port }}"
+        comment: "{{ item.comment }}"
+        state: present
+      when: item.destination_port is defined
+      with_items:
+        - "{{ iptables_rules }}"
+
+    - name: Set default input policy drop all
+      ansible.builtin.iptables:
+        chain: INPUT
+        jump: DROP
+
+    - name: Block all
+      ansible.builtin.iptables:
+        chain: OUTPUT
+        jump: ACCEPT
+  
+  notify: Save current state of the firewall for ipv4
+

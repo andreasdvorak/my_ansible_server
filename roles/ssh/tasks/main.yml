@@ -1,0 +1,24 @@
+---
+- name: Configure ssh alert
+  ansible.builtin.import_tasks:
+    file: ssh_alert.yaml
+
+- name: Disable Root Login
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: "PermitRootLogin no"
+    state: present
+    backup: true
+  notify:
+    - Restart sshd
+
+- name: Disable Password Login
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: "PasswordAuthentication no"
+    state: present
+    backup: true
+  notify:
+    - Restart sshd

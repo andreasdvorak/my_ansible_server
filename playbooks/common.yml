@@ -1,0 +1,8 @@
+- name: Common setup
+  hosts: all
+  become: true
+  tags: common
+  tasks:
+    - name: Include common role
+      ansible.builtin.include_role:
+        name: common

@@ -1,0 +1,13 @@
+---
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - docker-ce-rootless-extras
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+
+docker_prepare_packages:
+  - ca-certificates
+  - curl
+  - gnupg

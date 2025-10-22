@@ -1,0 +1,17 @@
+# VSCode
+*.code-workspace
+
+# inventory
+inventory/inventory*.ini
+
+# vars
+playbooks/group_vars/*
+playbooks/host_vars/*
+
+leodiet.de
+magickitchen.privatundfrei.de
+privatundfrei.de
+start_without_ansible_user
+
+.pre-commit-config.yaml
+

@@ -1,0 +1,48 @@
+---
+- name: Configure fail2ban.local
+  community.general.ini_file:
+    path: /etc/fail2ban/fail2ban.local
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    mode: u+rw,g+r
+  loop: "{{ fail2ban_base_configuration + fail2ban_configuration }}"
+  notify:
+    - Restart fail2ban
+  loop_control:
+    label: "{{ item.option }}"
+
+- name: Update configuration file - /etc/fail2ban/jail.local
+  ansible.builtin.template:
+    src: etc/fail2ban/jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: u+rw,g+r,o+r
+  notify:
+    - Restart fail2ban
+
+- name: Configure backend in jail.conf
+  community.general.ini_file:
+    path: /etc/fail2ban/jail.conf
+    section: "DEFAULT"
+    option: "backend"
+    value: "systemd"
+    mode: u+rw,g+r,o+r
+  notify:
+    - Restart fail2ban
+
+- name: Stat auth log file
+  ansible.builtin.stat:
+    path: /var/log/auth.log
+  check_mode: true
+  register: fail2ban_auth
+
+- name: Touch auth log file
+  ansible.builtin.file:
+    path: /var/log/auth.log
+    state: touch
+    mode: u+rw,g+r
+  when:
+    - fail2ban_auth.stat.exists is defined
+    - not fail2ban_auth.stat.exists

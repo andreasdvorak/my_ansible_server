@@ -1,0 +1,66 @@
+---
+- name: Install acl
+  hosts: webserver
+  become: true
+  tasks:
+    - name: Install acl package
+      ansible.builtin.package:
+        name: acl
+        state: present
+
+- name: Checkmk site
+  hosts: webserver
+  roles:
+    - checkmk.general.server
+
+- name: "Host and folder modules."
+  hosts: webserver
+  strategy: linear
+  gather_facts: false
+  tasks:
+    - name: "Create folders on site."
+      checkmk.general.folder:
+        server_url: "{{ checkmk_var_server_url }}"
+        site: "{{ item.site }}"
+        automation_user: "{{ checkmk_var_automation_user }}"
+        automation_secret: "{{ checkmk_var_automation_secret }}"
+        path: "{{ item.path }}"
+        name: "{{ item.name }}"
+        attributes:
+          tag_agent: "{{ item.agent }}"
+        state: "present"
+      run_once: true  # noqa run-once[task]
+      loop: "{{ checkmk_var_folders }}"
+
+    - name: "Pause to review changes on site."
+      ansible.builtin.pause:
+        prompt: |
+          "Feel free to review the changes in your Checkmk site: {{ item.site }}."
+          "Press <Enter> to continue."
+      when: not checkmk_var_run_unattended | bool
+      loop: "{{ checkmk_var_folders }}"
+
+    - name: "Create hosts."
+      checkmk.general.host:
+        server_url: "{{ checkmk_var_server_url }}"
+        site: "{{ item.site }}"
+        automation_user: "{{ checkmk_var_automation_user }}"
+        automation_secret: "{{ checkmk_var_automation_secret }}"
+        name: "{{ item.hostname }}"
+        folder: "{{ item.folder }}"
+        attributes:
+          site: "{{ item.site }}"
+          ipaddress: "{{ item.ipaddress | default(omit) }}"
+          tag_agent: "{{ item.agent | default(omit) }}"
+        state: "present"
+      loop: "{{ checkmk_var_hosts }}"
+
+    - name: "Activate changes on site."
+      checkmk.general.activation:
+        server_url: "{{ checkmk_var_server_url }}"
+        site: "{{ item.site }}"
+        automation_user: "{{ checkmk_var_automation_user }}"
+        automation_secret: "{{ checkmk_var_automation_secret }}"
+        force_foreign_changes: 'true'
+      run_once: true
+      loop: "{{ checkmk_var_folders }}"

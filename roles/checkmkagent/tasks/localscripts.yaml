@@ -1,0 +1,13 @@
+---
+- name: Install needrestart packages
+  ansible.builtin.package:
+    name: needrestart
+    state: present
+
+- name: Copy needrestart.sh
+  ansible.builtin.copy:
+    src: needrestart.sh
+    dest: /usr/lib/check_mk_agent/local/needrestart.sh
+    owner: root
+    group: root
+    mode: u+rwx,g+rx

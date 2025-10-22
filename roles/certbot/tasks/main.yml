@@ -1,0 +1,17 @@
+---
+# https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-22-04
+- name: Load OS specific variables
+  ansible.builtin.include_vars: "{{ ansible_facts['distribution'] }}\
+                -{{ ansible_facts['distribution_major_version'] }}.yml"
+
+- name: Install certbot packages
+  ansible.builtin.package:
+    name: "{{ certbot_packages }}"
+    state: present
+
+- name: Cronjob for certbot renew
+  ansible.builtin.cron:
+    name: "certbod"
+    minute: "*"
+    hour: "*/12"
+    job: "mk-job certbot /usr/bin/certbot renew >/dev/null 2>&1"

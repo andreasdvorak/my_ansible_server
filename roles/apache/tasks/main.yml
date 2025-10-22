@@ -1,0 +1,28 @@
+---
+- name: Load OS specific variables
+  ansible.builtin.include_vars: "{{ ansible_facts['distribution'] }}\
+                -{{ ansible_facts['distribution_major_version'] }}.yml"
+
+- name: Install Apache Webserver
+  ansible.builtin.package:
+    name: "{{ webserver_package }}"
+    state: present
+
+- name: Security configuration for Apache
+  ansible.builtin.import_tasks:
+    file: security.yml
+
+- name: Copy www backup script
+  ansible.builtin.copy:
+    src: backup_www.sh
+    dest: /backup/scripts/backup_www.sh
+    owner: root
+    group: root
+    mode: u+rwx
+
+- name: Create www backup cronjob
+  ansible.builtin.cron:
+    name: "www backup"
+    minute: "20"
+    hour: "2,12"
+    job: "mk-job www_backup /backup/scripts/backup_www.sh >/dev/null 2>&1"

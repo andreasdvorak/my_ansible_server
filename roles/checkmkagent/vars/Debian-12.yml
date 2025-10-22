@@ -1,0 +1,2 @@
+---
+checkmk_agent_package: "check-mk-agent_{{ checkmk_agent_version }}-1_all.deb"

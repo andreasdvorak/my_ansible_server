@@ -1,0 +1,24 @@
+---
+- name: Copy backup script
+  ansible.builtin.copy:
+    src: backup_nextclouddav.sh
+    dest: /backup/scripts/backup_nextclouddav.sh
+    owner: root
+    group: root
+    mode: u+rwx
+
+- name: Copy dav backup script
+  ansible.builtin.copy:
+    src: calcardbackup
+    dest: /backup/scripts/calcardbackup
+    owner: root
+    group: root
+    mode: u+rwx
+
+- name: Create nextcloud calcard backup cronjob
+  ansible.builtin.cron:
+    name: "dav backup"
+    minute: "15"
+    hour: "2,12"
+    job: "mk-job dav_backup /backup/scripts/backup_nextclouddav.sh \
+         >/dev/null 2>&1"

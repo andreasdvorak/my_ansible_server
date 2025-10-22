@@ -1,0 +1,8 @@
+- name: Konfiguration of ssh
+  hosts: all
+  become: true
+  tags: ssh
+  tasks:
+    - name: Include ssh role
+      ansible.builtin.include_role:
+        name: ssh

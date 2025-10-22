@@ -1,0 +1,13 @@
+---
+- name: Installation of Checkmk agent
+  hosts: all
+  roles:
+    - checkmk.general.agent
+  tags: checkmk_agent
+
+- name: Installation of agent plugins
+  hosts: all
+  become: true
+  roles:
+    - checkmkagent
+  tags: checkmk_rest

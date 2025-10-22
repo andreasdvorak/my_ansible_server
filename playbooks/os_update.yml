@@ -1,0 +1,10 @@
+---
+- name: OS Update
+  hosts: all
+  become: true
+  tasks:
+    - name: Include os_update role
+      ansible.builtin.include_role:
+        name: os_update
+      tags:
+        - always

@@ -1,0 +1,18 @@
+---
+- name: Load OS specific variables
+  ansible.builtin.include_vars: "{{ ansible_facts['distribution'] }}\
+                  -{{ ansible_facts['distribution_major_version'] }}.yml"
+
+- name: CheckMK agent plugins
+  ansible.builtin.import_tasks:
+    file: plugins.yml
+  tags: checkmk_agent_plugins
+
+- name: "CheckMK fileinfo"
+  ansible.builtin.import_tasks:
+    file: fileinfo.yml
+  tags: checkmk_fileinfo
+
+- name: "CheckMK local scripts"
+  ansible.builtin.import_tasks:
+    file: localscripts.yaml

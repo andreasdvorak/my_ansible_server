@@ -1,0 +1,24 @@
+---
+- name: Load OS specific variables
+  ansible.builtin.include_vars: "{{ ansible_facts['distribution'] }}\
+                -{{ ansible_facts['distribution_major_version'] }}.yml"
+
+- name: Set ServerTokens
+  ansible.builtin.lineinfile:
+    dest: /etc/apache2/apache2.conf
+    regexp: '^ServerTokens'
+    line: "ServerTokens Prod"
+    state: present
+    backup: true
+  notify:
+    - Restart Apache
+
+- name: Disable the ServerSignature Directive
+  ansible.builtin.lineinfile:
+    dest: /etc/apache2/apache2.conf
+    regexp: '^ServerSignature'
+    line: "ServerSignature Off"
+    state: present
+    backup: true
+  notify:
+    - Restart Apache

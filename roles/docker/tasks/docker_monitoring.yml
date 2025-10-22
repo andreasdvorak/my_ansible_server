@@ -1,0 +1,5 @@
+---
+- name: Install python3-docker
+  ansible.builtin.package:
+    name: python3-docker
+    state: present

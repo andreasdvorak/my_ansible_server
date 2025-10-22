@@ -1,0 +1,10 @@
+---
+- name: Install iptables packages
+  ansible.builtin.package:
+    name: iptables
+    state: present
+
+- name: Install iptables-persistent packages
+  ansible.builtin.package:
+    name: iptables-persistent
+    state: present

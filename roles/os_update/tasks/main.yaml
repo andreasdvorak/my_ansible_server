@@ -1,0 +1,4 @@
+---
+- name: Update
+  ansible.builtin.include_tasks:
+    file: "{{ ansible_os_family }}.yaml"
